@@ -38,6 +38,28 @@ public abstract class GameBoard
     public abstract bool PlayTurn(int col, char symbol);
 }
 
+public class ConnectFourBoard : GameBoard{
+  public override bool PlayTurn(int col, char symbol)
+  {
+    for (int i = 5; i>= 0; i--)
+      {
+          if (grid[i, col] == '.')
+          {
+              grid[i, col] = symbol;
+              lastCol = col;
+              lastRow = i;
+              lastSymbol = symbol;
+              return true;
+          }
+      }
+      return false;
+  }
+  
+  private int lastRow;
+  private int lastCol;
+  private char lastSymbol;
+}
+
 class program
 {
       
