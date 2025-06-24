@@ -1,0 +1,45 @@
+using System;
+namespace Project_Connect_4{
+  class program
+  {
+      static void Main()
+      {
+          Player player1 = new Player("Player One", 'X');
+          Player player2 = new Player("Player Two", 'Y');
+  
+          // now polymorphism is in use
+          ConnectFourBoard board = new ConnectFourBoard();
+          Player current = player1;
+          for (int turn = 0; turn < 42; turn++)
+          {
+              Console.Clear();
+              Console.WriteLine("Simple Connect Four\n");
+              board.DisplayBoard();
+              Console.WriteLine($"\n{current}'s turn. choose column (0-6):");
+  
+              int col;
+              while (!int.TryParse(Console.ReadLine(), out col) || col < 0 || col > 6 || !board.PlayTurn(col, current.Symbol))
+              {
+                  Console.WriteLine("Wrong move. please try again:");
+              }
+              Player winner = current;
+              //alternate players
+              current = current == player1 ? player2 : player1;
+  
+  
+              
+              if (board.CheckWinner())
+              {
+                  Console.Clear();
+                  board.DisplayBoard();
+  
+                  Console.WriteLine($": {winner} just won!!!");
+                  return;
+              }
+          }
+          Console.Clear();
+          board.DisplayBoard();
+          Console.WriteLine("Game Over!");
+      }
+
+}
