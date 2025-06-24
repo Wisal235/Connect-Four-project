@@ -1,7 +1,46 @@
 using System;
 namespace Project_Connect_4{
-  class program
-  {
+  
+public class Player
+{
+    public string? Name { get; private set; }
+    public char Symbol { get; private set; }
+
+    public Player(string name, char symol)
+    {
+        Name = name;
+        Symbol = symol;
+    }
+    public override string ToString()
+    {
+        return $"{Name}({Symbol})";
+    }
+}
+// gameboard using abstract
+public abstract class GameBoard
+{
+    protected char[,] grid = new char[6, 7];
+    public GameBoard()
+    {
+        for (int i = 0; i < 6; i++)
+            for (int x = 0; x < 7; x++)
+                grid[i, x] = '.';
+    }
+    public void DisplayBoard()
+    {
+        for (int i = 0; i < 6; i++)
+        {
+            for (int x = 0; x < 7; x++)
+                Console.Write(grid[i, x] + " ");
+            Console.WriteLine();
+        }
+    }
+    public abstract bool PlayTurn(int col, char symbol);
+}
+
+class program
+{
+      
       static void Main()
       {
           Player player1 = new Player("Player One", 'X');
