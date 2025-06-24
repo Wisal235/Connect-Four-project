@@ -58,6 +58,40 @@ public class ConnectFourBoard : GameBoard{
   private int lastRow;
   private int lastCol;
   private char lastSymbol;
+
+  public bool CheckWinner()
+  {
+      return CheckDirection(0, 1) || CheckDirection(1, 0) || CheckDirection(1, 1) || CheckDirection(1, -1);
+  
+  }
+
+  private bool CheckDirection(int forRow, int forCol)
+  {
+      int count = 1;
+  
+      //check forward
+      count += CountInDirection(forRow, forCol);
+  
+      count += CountInDirection(-forRow, -forCol);
+  
+      return count >= 4;
+  }
+
+  private int CountInDirection(int forRow, int forCol)
+  {
+      int count = 0;
+      int r = lastRow + forRow;
+      int c = lastCol + forCol;
+  
+      while (r >= 0 && r < 6 && c >= 0 && c < 7 && grid[r, c] == lastSymbol)
+      {
+          count++;
+          r += forRow;
+          c += forCol;
+      }
+  
+      return count;
+  }
 }
 
 class program
