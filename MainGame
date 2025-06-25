@@ -1,140 +1,167 @@
-using System;
-namespace Project_Connect_4{
-  
-public class Player
-{
-    public string? Name { get; private set; }
-    public char Symbol { get; private set; }
 
-    public Player(string name, char symol)
-    {
-        Name = name;
-        Symbol = symol;
-    }
-    public override string ToString()
-    {
-        return $"{Name}({Symbol})";
-    }
-}
-// gameboard using abstract
-public abstract class GameBoard
+using System;
+namespace Project_Connect_4
 {
-    protected char[,] grid = new char[6, 7];
-    public GameBoard()
+    // main class using encapsulation
+    public class Player
     {
-        for (int i = 0; i < 6; i++)
-            for (int x = 0; x < 7; x++)
-                grid[i, x] = '.';
-    }
-    public void DisplayBoard()
-    {
-        for (int i = 0; i < 6; i++)
+        public string? Name { get; private set; }
+        public char Symbol { get; private set; }
+       
+        public Player(string name, char symbol)
         {
-            for (int x = 0; x < 7; x++)
-                Console.Write(grid[i, x] + " ");
-            Console.WriteLine();
+            Name = name;
+            Symbol = symbol;
+        }
+        public override string ToString()
+        {
+            return $"{Name}({Symbol})";
         }
     }
-    public abstract bool PlayTurn(int col, char symbol);
-}
+    // gameboard using abstract
+    public abstract class GameBoard
+    {
+        protected char[,] grid = new char[6, 7];
+        public GameBoard()
+        {
+            for (int i = 0; i < 6; i++)
+                for (int x = 0; x < 7; x++)
+                    grid[i, x] = '.';
+        }
+        public void DisplayBoard()
+        {
+           
+            for (int i = 0; i < 6; i++)
+            {
+                for (int x = 0; x < 7; x++)
+                    Console.Write(grid[i, x] + " ");
+                Console.WriteLine(); 
+               
+            } 
+            Console.WriteLine("0 1 2 3 4 5 6 ");
+        }
+        public abstract bool PlayTurn(int col, char symbol);
+    }
 
-public class ConnectFourBoard : GameBoard{
-  public override bool PlayTurn(int col, char symbol)
-  {
-    for (int i = 5; i>= 0; i--)
-      {
-          if (grid[i, col] == '.')
-          {
-              grid[i, col] = symbol;
-              lastCol = col;
-              lastRow = i;
-              lastSymbol = symbol;
-              return true;
-          }
-      }
-      return false;
-  }
-  
-  private int lastRow;
-  private int lastCol;
-  private char lastSymbol;
+    // using inheritance from gameboard and then overrides playturn
+    public class ConnectFourBoard : GameBoard
+    {
+        public override bool PlayTurn(int col, char symbol)
+        {
+          for (int i = 5; i>= 0; i--)
+            {
+                if (grid[i, col] == '.')
+                {
+                    grid[i, col] = symbol;
+                    lastCol = col;
+                    lastRow = i;
+                    lastSymbol = symbol;
+                    return true;
+                }
+            }
+            return false;
+        }
 
-  public bool CheckWinner()
-  {
-      return CheckDirection(0, 1) || CheckDirection(1, 0) || CheckDirection(1, 1) || CheckDirection(1, -1);
-  
-  }
+        private int lastRow;
+        private int lastCol;
+        private char lastSymbol;
 
-  private bool CheckDirection(int forRow, int forCol)
-  {
-      int count = 1;
-  
-      //check forward
-      count += CountInDirection(forRow, forCol);
-  
-      count += CountInDirection(-forRow, -forCol);
-  
-      return count >= 4;
-  }
+        public bool CheckWinner()
+        {
+            return CheckDirection(0, 1) || CheckDirection(1, 0) || CheckDirection(1, 1) || CheckDirection(1, -1);
+            
+        }
 
-  private int CountInDirection(int forRow, int forCol)
-  {
-      int count = 0;
-      int r = lastRow + forRow;
-      int c = lastCol + forCol;
-  
-      while (r >= 0 && r < 6 && c >= 0 && c < 7 && grid[r, c] == lastSymbol)
-      {
-          count++;
-          r += forRow;
-          c += forCol;
-      }
-  
-      return count;
-  }
-}
+        private bool CheckDirection(int rowDir, int colDir)
+        {
+            int count = 1;
 
-class program
-{
+            //check forward
+            count += CountInDirection(rowDir, colDir);
+
+            count += CountInDirection(-rowDir, -colDir);
+
+            return count >= 4;
+        }
+
+        private int CountInDirection(int rowDir, int colDir)
+        {
+            int count = 0;
+            int r = lastRow + rowDir;
+            int c = lastCol + colDir;
+
+            while(r >= 0 && r < 6 && c >= 0 && c< 7 && grid[r, c] == lastSymbol)
+            {
+                count++;
+                r += rowDir;
+                c += colDir;
+            }
+
+            return count;
+        }
+
+        public void ResetBoard()
+        {
+            for (int i = 0; i < 6; i++)
+                for (int x = 0; x < 7; x++)
+                    grid[i, x] = '.';
+        }
+
+    }
+    class program
+    {
+        static void Main()
+        {
+            do
+            {
+            Player player1 = new Player("Player One", 'X');
+            Player player2 = new Player("Player Two", 'Y');
+            Player current = player1;
+            bool gameWon = false;
+
+           ConnectFourBoard board = new ConnectFourBoard();
+            board.ResetBoard();
+
       
-      static void Main()
-      {
-          Player player1 = new Player("Player One", 'X');
-          Player player2 = new Player("Player Two", 'Y');
-  
-          // now polymorphism is in use
-          ConnectFourBoard board = new ConnectFourBoard();
-          Player current = player1;
-          for (int turn = 0; turn < 42; turn++)
-          {
-              Console.Clear();
-              Console.WriteLine("Simple Connect Four\n");
-              board.DisplayBoard();
-              Console.WriteLine($"\n{current}'s turn. choose column (0-6):");
-  
-              int col;
-              while (!int.TryParse(Console.ReadLine(), out col) || col < 0 || col > 6 || !board.PlayTurn(col, current.Symbol))
-              {
-                  Console.WriteLine("Wrong move. please try again:");
-              }
-              Player winner = current;
-              //alternate players
-              current = current == player1 ? player2 : player1;
-  
-  
-              
-              if (board.CheckWinner())
-              {
-                  Console.Clear();
-                  board.DisplayBoard();
-  
-                  Console.WriteLine($": {winner} just won!!!");
-                  return;
-              }
-          }
-          Console.Clear();
-          board.DisplayBoard();
-          Console.WriteLine("Game Over!");
-      }
+            for (int turn = 0; turn < 42; turn++)
+            {
+                Console.Clear();
+                Console.WriteLine("Connect Four Game\n");
+                board.DisplayBoard();
+                Console.WriteLine($"\n{current}'s turn. choose column (0-6):");
 
+                int col;
+                while (!int.TryParse(Console.ReadLine(), out col) || col < 0 || col > 6 || !board.PlayTurn(col, current.Symbol))
+                {
+                    Console.WriteLine("Wrong move. please try again:");
+                }
+                if (board.CheckWinner())
+                {
+                    Console.Clear();
+                    board.DisplayBoard();
+                    Console.WriteLine($"\n {current} just won!");
+                    gameWon = true;
+                    break;
+
+                }
+
+                current = current == player1 ? player2 : player1;
+            }
+            if (!gameWon)
+            {
+                Console.Clear();
+                board.DisplayBoard();
+                Console.WriteLine("Game Over! It is tie!");
+            }
+            Console.WriteLine("\n Do you want to play again? (Y/N)");
+            }
+          
+
+            while (Console.ReadLine().ToUpper() == "Y");
+
+             Console.WriteLine("Thank you for playing!");
+
+        }
+        
+    }
 }
